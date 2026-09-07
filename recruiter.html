@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dwij Vyas — Engineering brief</title>
+<meta name="description" content="Dwij Vyas — Electronics &amp; Communication Engineering. Embedded systems, robotics and applied AI. A one-page brief: skills, five systems, experience and recognition.">
+<link rel="stylesheet" href="secret-pathways-assets/fonts.css">
+<style>
+/* A warm paper palette: beige ground, warm ink, and a muted terracotta that
+   answers the temple's vermilion without shouting on a light page. */
+:root{
+  --paper:#e8dcc8;        /* the sheet — a browner beige */
+  --paper-2:#ded0b7;      /* raised panel */
+  --paper-3:#d2c2a4;      /* pressed / hover */
+  --ink:#241b10;          /* warm brown-black */
+  --ink-2:#4a3a26;        /* body copy: dark enough to carry at 400 */
+  --muted:#75623f;
+  --line:rgba(36,27,16,.22);
+  --line-soft:rgba(36,27,16,.12);
+  --terra:#96311c;        /* the accent, kin to the vermilion */
+  --sage:#4c6647;
+  --pad:clamp(20px,3.4vw,56px);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+html{ background:var(--paper); }
+body{
+  margin:0; background:transparent; color:var(--ink);
+  font-family:'Onest',system-ui,-apple-system,'Helvetica Neue',sans-serif;
+  font-weight:400; font-size:17px; line-height:1.68;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  /* the faintest laid-paper tone, so a full-bleed beige does not read flat */
+  background-image:linear-gradient(180deg, rgba(246,238,222,.4), rgba(246,238,222,0) 30%);
+  background-attachment:fixed;
+}
+::selection{ background:var(--terra); color:var(--paper); }
+a{ color:inherit; text-decoration:none; }
+a:hover{ color:var(--terra); }
+
+
+/* ---------------------------------------------------------------- the plate
+   A woodblock landscape behind the sheet, faded almost out and washed with
+   the paper colour. Two fixed layers: the painting, and a warm scrim above
+   it carrying most of the fade. A negative z-index keeps it under every line
+   of type while still sitting above the page background. */
+.plate{ position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
+.plate::before{
+  content:''; position:absolute; inset:0;
+  /* a wide viewport crops this tall scroll to its top band, which is just sky
+     and the signature cartouches; pulling the frame down lands the mountain,
+     the lake and the pagoda behind the masthead instead */
+  background:url('brief-plate.jpg') center 42% / cover no-repeat;
+  /* contrast on pale paper comes from the painting being DARKER than the
+     sheet, not lighter — brightening it was what made it disappear */
+  filter:sepia(.34) saturate(.72) contrast(1.04) brightness(.94);
+  opacity:.62;
+  /* the painting is a tall scroll: let it fall away toward the reading */
+  -webkit-mask-image:linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,.9) 40%, rgba(0,0,0,.5) 72%, rgba(0,0,0,.22) 100%);
+  mask-image:linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,.9) 40%, rgba(0,0,0,.5) 72%, rgba(0,0,0,.22) 100%);
+}
+.plate::after{
+  content:''; position:absolute; inset:0;
+  /* the scrim only needs to protect the reading column, not erase the plate */
+  background:
+    radial-gradient(105% 62% at 50% 4%, rgba(232,220,200,.06), rgba(232,220,200,.46) 62%, rgba(232,220,200,.72) 100%),
+    linear-gradient(180deg, rgba(232,220,200,.04), rgba(232,220,200,.5) 62%, rgba(232,220,200,.78));
+}
+@media (max-width:820px){ .plate::before{ opacity:.42; } }
+
+/* ---------------------------------------------------------------- shell */
+.wrap{ max-width:1120px; margin:0 auto; padding:0 var(--pad) 120px; }
+
+.bar{
+  position:sticky; top:0; z-index:20;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:16px var(--pad); background:rgba(232,220,200,.94);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.bar-id{ display:flex; align-items:center; gap:12px; min-width:0; }
+.bar-id:hover{ color:var(--ink); }
+.bar-id svg{ flex:0 0 auto; }
+.bar-id b{ font-weight:400; font-size:14px; letter-spacing:.16em; text-transform:uppercase; white-space:nowrap; }
+.bar-id i{ font-style:normal; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+.bar-act{ display:flex; align-items:center; gap:8px; flex:0 0 auto; }
+.btn{
+  display:inline-flex; align-items:center; gap:9px; cursor:pointer;
+  font:inherit; font-weight:500; font-size:10.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink-2); background:transparent; border:1px solid var(--line);
+  padding:10px 14px; transition:border-color .4s, color .4s, background .4s;
+  white-space:nowrap;
+}
+.btn:hover{ border-color:rgba(36,27,16,.42); color:var(--ink); background:rgba(36,27,16,.06); }
+.btn--key{ border-color:var(--terra); background:var(--terra); color:var(--paper); }
+.btn--key:hover{ border-color:#7d2716; background:#7d2716; color:var(--paper); }
+
+/* ---------------------------------------------------------------- masthead */
+.top{ padding:clamp(40px,7vh,86px) 0 clamp(26px,4vh,44px); border-bottom:1px solid var(--line); }
+.top h1{
+  margin:0 0 14px; font-weight:400; font-size:clamp(38px,6.6vw,86px);
+  letter-spacing:-.035em; line-height:.98; text-transform:uppercase;
+}
+.top .role{ margin:0 0 26px; font-size:clamp(16.5px,1.9vw,22px); color:var(--ink-2); max-width:46ch; }
+.top .sum{ margin:0; font-size:15.5px; line-height:1.75; color:var(--ink-2); max-width:68ch; text-wrap:pretty; }
+.facts{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(172px,1fr));
+  gap:20px 28px; margin-top:clamp(26px,4vh,40px);
+}
+.facts div dt{ font-weight:500; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+.facts div dd{ margin:0; font-size:14.5px; color:var(--ink); }
+.facts div dd a{ border-bottom:1px solid rgba(36,27,16,.3); }
+.facts div dd a:hover{ border-color:var(--terra); }
+/* a hanging dot, so a wrapped label keeps its left edge */
+.live{ position:relative; display:inline-block; padding-left:15px; }
+.live::before{
+  content:''; position:absolute; left:0; top:8px; width:6px; height:6px; border-radius:50%; background:var(--sage);
+  box-shadow:0 0 0 3px rgba(76,102,71,.2);
+}
+
+/* ---------------------------------------------------------------- sections */
+section{ padding:clamp(34px,6vh,64px) 0; border-bottom:1px solid var(--line-soft); }
+.sh{ display:flex; align-items:baseline; gap:14px; margin-bottom:clamp(20px,3vh,32px); }
+.sh h2{
+  margin:0; font-weight:500; font-size:11px; letter-spacing:.24em;
+  text-transform:uppercase; color:var(--terra); white-space:nowrap;
+}
+.sh i{ flex:1; height:1px; background:var(--line); }
+.sh span{ font-weight:500; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+
+/* skills */
+.sk{ display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:clamp(18px,2.6vw,36px); }
+.sk-g h3{
+  margin:0 0 12px; font-weight:500; font-size:14.5px; letter-spacing:.01em; color:var(--ink);
+  padding-bottom:9px; border-bottom:1px solid var(--line);
+}
+.sk-g h3 em{ font-style:normal; float:right; font-size:11px; letter-spacing:.16em; color:var(--muted); }
+.sk-g ul{ margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:6px; }
+.sk-g li{
+  font-size:12px; letter-spacing:.01em; color:var(--ink);
+  border:1px solid var(--line-soft); background:var(--paper-2); padding:6px 10px;
+}
+
+/* projects */
+.pj{ display:flex; flex-direction:column; }
+.pj-i{ padding:clamp(18px,2.6vh,26px) 0; border-bottom:1px solid var(--line-soft); }
+.pj-i:last-child{ border-bottom:0; padding-bottom:0; }
+.pj-h{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:9px; }
+.pj-h b{ font-weight:500; font-size:clamp(17px,2vw,23px); letter-spacing:-.015em; color:var(--ink); }
+.pj-h span{ font-weight:500; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--terra); }
+.pj-h .yr{ margin-left:auto; color:var(--muted); letter-spacing:.16em; }
+.pj-i p{ margin:0 0 11px; font-size:14.5px; line-height:1.72; color:var(--ink-2); max-width:82ch; text-wrap:pretty; }
+.pj-i p strong{ color:var(--ink); font-weight:500; }
+.pj-t{ font-size:12px; color:#6b5838; line-height:1.7; }
+.pj-t b{ font-weight:500; color:var(--ink); }
+.pj-i a.doc{
+  display:inline-flex; align-items:center; gap:8px; margin-top:11px;
+  font-weight:500; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink);
+  border-bottom:1px solid var(--line); padding-bottom:3px; transition:color .35s, border-color .35s;
+}
+.pj-i a.doc:hover{ color:var(--terra); border-color:var(--terra); }
+
+/* record */
+.rc{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:clamp(20px,3vw,44px); align-items:start; }
+.rc-g > h3{
+  margin:0 0 4px; font-weight:500; font-size:10px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--muted);
+  padding-bottom:9px; border-bottom:1px solid var(--line);
+}
+.rc-i{ padding:15px 0; border-bottom:1px solid var(--line-soft); }
+.rc-i:last-child{ border-bottom:0; }
+.rc-i b{ display:block; font-weight:500; font-size:15.5px; letter-spacing:-.01em; color:var(--ink); margin-bottom:5px; }
+.rc-i em{ font-style:normal; display:block; font-size:11.5px; color:#6b5838; line-height:1.58; }
+.rc-i p{ margin:9px 0 0; font-size:13.5px; line-height:1.68; color:var(--ink-2); text-wrap:pretty; }
+.rc-i .fig{ float:right; font-weight:500; font-size:17px; color:var(--terra); letter-spacing:-.01em; }
+
+/* contact */
+.ct{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:8px; }
+.ct a{
+  display:flex; flex-direction:column; gap:6px; padding:16px 15px;
+  border:1px solid var(--line); background:var(--paper-2);
+  transition:border-color .4s, background .4s, transform .5s var(--ease-out);
+}
+.ct a:hover{ border-color:rgba(36,27,16,.42); background:var(--paper-3); transform:translateY(-2px); }
+.ct a span{ font-weight:500; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+.ct a b{ font-weight:500; font-size:14.5px; color:var(--ink); word-break:break-word; }
+.ct a:hover b{ color:var(--ink); }
+.ct a.key{ border-color:var(--terra); background:rgba(150,49,28,.1); }
+.ct a.key b{ color:var(--terra); }
+.ct a.key:hover{ background:rgba(150,49,28,.16); }
+.ct a.key:hover b{ color:#7d2716; }
+
+.foot{ padding-top:clamp(28px,4vh,44px); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  font-weight:500; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+.foot a:hover{ color:var(--terra); }
+
+@media (max-width:600px){
+  .bar{ flex-wrap:wrap; }
+  .bar-id i{ display:none; }
+  .btn{ padding:9px 11px; font-size:10px; letter-spacing:.14em; }
+  .pj-h .yr{ margin-left:0; }
+  .rc-i .fig{ float:none; display:block; margin-bottom:6px; }
+}
+
+
+/* ---------------------------------------------------------------- legibility
+   The type was inherited from the dark sheet, where a 300 weight in bone on
+   near-black is comfortable. Dark ink on warm paper needs more body, so the
+   scale below raises weight and darkens the greys rather than enlarging
+   anything — the page keeps its density and stops straining the eye. */
+.top .role{ font-weight:400; color:var(--ink-2); }
+.top .sum{ font-weight:400; color:var(--ink-2); }
+.facts div dt{ font-weight:500; color:var(--muted); }
+.facts div dd{ font-weight:400; color:var(--ink); }
+.sh h2{ font-weight:600; }
+.sh span{ font-weight:500; color:var(--muted); }
+.sk-g h3{ font-weight:600; font-size:16px; color:var(--ink); }
+.sk-g h3 em{ font-weight:500; color:var(--muted); }
+.sk-g li{ font-weight:450; font-size:13.5px; color:var(--ink); }
+.pj-h b{ font-weight:500; color:var(--ink); }
+.pj-h span{ font-weight:600; }
+.pj-h .yr{ font-weight:500; color:var(--muted); }
+.pj-i p{ font-weight:400; color:var(--ink-2); font-size:16px; }
+.pj-t{ font-weight:400; color:var(--muted); font-size:13.5px; }
+.pj-t b{ font-weight:600; color:var(--ink); }
+.pj-i a.doc{ font-weight:600; color:var(--ink); }
+.rc-g > h3{ font-weight:600; color:var(--muted); }
+.rc-i b{ font-weight:500; color:var(--ink); font-size:17px; }
+.rc-i em{ font-weight:400; color:var(--muted); font-size:13px; }
+.rc-i p{ font-weight:400; color:var(--ink-2); font-size:15px; }
+.rc-i .fig{ font-weight:500; }
+.ct a span{ font-weight:600; color:var(--muted); }
+.ct a b{ font-weight:500; color:var(--ink); font-size:16px; }
+.btn{ font-weight:600; color:var(--ink); }
+.bar-id i{ font-weight:500; color:var(--muted); }
+
+/* the second half of the size pass: the labels, the meta and the chrome. The
+   earlier rules above already carry the body copy, so these sit here to win
+   on order rather than restating each base rule. */
+.top .sum{ font-size:17px; line-height:1.74; }
+.facts div dt{ font-size:10.5px; }
+.facts div dd{ font-size:16px; }
+.sh h2{ font-size:12.5px; }
+.sh span{ font-size:11px; }
+.sk-g h3 em{ font-size:12px; }
+.pj-h b{ font-size:clamp(19px,2.2vw,25px); }
+.pj-h span{ font-size:11.5px; }
+.pj-i a.doc{ font-size:11.5px; }
+.rc-g > h3{ font-size:11.5px; }
+.rc-i .fig{ font-size:19px; }
+.ct a span{ font-size:10.5px; }
+.btn{ font-size:11.5px; }
+.foot{ font-size:11px; }
+.bar-id b{ font-size:15px; }
+.bar-id i{ font-size:12px; }
+@media (max-width:600px){ .btn{ font-size:10.5px; letter-spacing:.13em; } }
+.foot{ font-weight:500; color:var(--muted); }
+.live{ font-weight:500; }
+
+/* ---------------------------------------------------------------- print
+   Recruiters print. The screen palette is already ink on paper, so printing
+   only needs the chrome gone and the tints flattened to save toner. */
+@media print{
+  @page{ margin:14mm; }
+  body{ background:#fff; color:#111; font-size:10.5pt; }
+  .plate{ display:none !important; }
+  .bar, .btn, .foot{ display:none !important; }
+  .wrap{ max-width:none; padding:0; }
+  a{ color:#111; }
+  .top{ padding:0 0 10pt; }
+  .top h1{ font-size:26pt; }
+  .top .role{ font-size:11pt; }
+  section{ padding:10pt 0; break-inside:avoid; }
+  .sk-g li, .ct a, .ct a.key{ background:none; }
+  .rc-i .fig, .sh h2, .pj-h span{ color:#111; }
+  .live::before{ display:none; }
+}
+
+.pj-imgs{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin:0 0 12px; }
+.pj-imgs img{ display:block; width:100%; aspect-ratio:16/10; object-fit:cover; border:1px solid var(--line-soft); }
+@media print{ .pj-imgs{ grid-template-columns:repeat(3,1fr); } .pj-imgs img{ break-inside:avoid; } }
+</style>
+</head>
+<body>
+
+<div class="plate" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="bar-id" href="index.html">
+    <svg viewBox="0 0 44 44" fill="none" width="26" height="26" aria-hidden="true">
+      <circle cx="22" cy="25" r="8.6" fill="#a33a28" fill-opacity=".92"/>
+      <path d="M5 13h34M9 18.4h26M22 8.5v27" stroke="#1f1b16" stroke-width="1.5"/>
+    </svg>
+    <b>Dwij Vyas</b><i>Recruiter brief</i>
+  </a>
+  <div class="bar-act">
+    <button class="btn" type="button" onclick="window.print()">Print</button>
+    <a class="btn" href="dwij-vyas-resume.pdf" download>Résumé</a>
+    <a class="btn btn--key" href="index.html">Full experience →</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="top">
+    <h1 id="r-name">Dwij Vyas</h1>
+    <p class="role" id="r-role">Electronics &amp; Communication Engineering — embedded systems, robotics and applied AI.</p>
+    <p class="sum" id="r-sum">I'm an Electronics &amp; Communication Engineering undergraduate at BVM, working across embedded
+      systems, digital electronics and applied AI. My work spans hardware design, firmware and the software that
+      ties them together. I'm looking for an internship where I can do this kind of work on a real team.</p>
+    <dl class="facts" id="r-facts">
+      <div><dt>Status</dt><dd><span class="live">Open to internships</span></dd></div>
+      <div><dt>Based</dt><dd>Vadodara, Gujarat, India</dd></div>
+      <div><dt>Degree</dt><dd>B.Tech ECE · CPI 9.05 / 10</dd></div>
+      <div><dt>Email</dt><dd><a href="mailto:dwijgvyas@gmail.com">dwijgvyas@gmail.com</a></dd></div>
+      <div><dt>Phone</dt><dd><a href="tel:+919408388690">+91 94083 88690</a></dd></div>
+      <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/dwij-vyas" target="_blank" rel="noopener">in/dwij-vyas</a></dd></div>
+    </dl>
+  </div>
+
+  <section>
+    <div class="sh"><h2>Technical skills</h2><i></i><span>50 across 5 disciplines</span></div>
+    <div class="sk" id="r-skills">
+      <div class="sk-g">
+        <h3>Embedded<em>12</em></h3>
+        <ul>
+          <li>C</li><li>C++</li><li>ESP32 / ESP8266</li><li>ATmega328P</li><li>AVR128DA48</li>
+          <li>Arduino</li><li>Arduino IDE</li><li>Sensor fusion</li><li>Wireless communication</li>
+          <li>SPI TFT · capacitive touch</li><li>OLED SSD1306</li><li>PAM8403</li>
+        </ul>
+      </div>
+      <div class="sk-g">
+        <h3>Robotics<em>10</em></h3>
+        <ul>
+          <li>Pixhawk 2.4.8</li><li>Raspberry Pi</li><li>Jetson Nano</li><li>Mission Planner</li>
+          <li>QGroundControl</li><li>Autonomous navigation</li><li>Autonomous mapping</li>
+          <li>Robotics</li><li>Stepper motors</li><li>GRBL firmware</li>
+        </ul>
+      </div>
+      <div class="sk-g">
+        <h3>Digital logic<em>10</em></h3>
+        <ul>
+          <li>Verilog</li><li>BASYS3 FPGA</li><li>Xilinx Vivado</li><li>Digital electronics</li>
+          <li>CPU architecture</li><li>Microprocessor / microcontroller architecture</li>
+          <li>74-series TTL</li><li>555 timer</li><li>Breadboard prototyping</li><li>Digital Logic Sim</li>
+        </ul>
+      </div>
+      <div class="sk-g">
+        <h3>Software &amp; AI<em>10</em></h3>
+        <ul>
+          <li>Python</li><li>MATLAB</li><li>C++</li><li>Linux / Ubuntu</li><li>OpenCV</li>
+          <li>Object detection</li><li>Thermal imaging</li><li>Autonomous navigation</li>
+          <li>Sensor fusion</li><li>GUI design</li>
+        </ul>
+      </div>
+      <div class="sk-g">
+        <h3>Fabrication<em>8</em></h3>
+        <ul>
+          <li>Fusion 360</li><li>EasyEDA</li><li>PCB design</li><li>Bambu Studio</li>
+          <li>3D modelling</li><li>Autodesk design</li><li>ANSYS</li><li>Inkscape</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><h2>Projects</h2><i></i><span>Five systems, built end to end</span></div>
+    <div class="pj" id="r-projects">
+
+      <article class="pj-i">
+        <div class="pj-h"><b>TerraAvis</b><span>Robotics · Embedded AI · Pixhawk</span><span class="yr">2025</span></div>
+        <p>An AI-enabled hybrid rescue robot with a dual-mode mobility system combining aerial navigation and
+          tracked ground movement. Integrated thermal imaging, FPV surveillance, real-time object detection and
+          autonomous control for search-and-rescue and disaster-response scenarios.
+          <strong>Robofest 5.0 Gujarat state finalist.</strong></p>
+        <div class="pj-t"><b>Technologies</b> — Pixhawk, Raspberry Pi, Python, OpenCV, thermal imaging, PCB design,
+          Fusion 360, Linux, Autodesk design, GUI design, autonomous mapping, Mission Planner, ANSYS</div>
+        <a class="doc" href="https://drive.google.com/drive/folders/1DYj1aq4hzN4QaE1onNEsXEsNY5stDXUG?usp=sharing" target="_blank" rel="noopener">Documentation →</a>
+      </article>
+
+      <article class="pj-i">
+        <div class="pj-h"><b>4-Bit Microprocessor</b><span>Digital electronics · CPU design</span><span class="yr">2025</span></div>
+        <p>A fully functional 4-bit microprocessor built entirely from discrete 74-series logic ICs on breadboards.
+          Complete datapath including ALU, registers, instruction register, program counter and shared bus, with a
+          hardwired control unit and a custom instruction set supporting arithmetic, logical, load, store and
+          conditional jump operations.</p>
+        <div class="pj-t"><b>Technologies</b> — 74-series TTL, 555 timer, breadboard prototyping, Digital Logic Sim</div>
+        <a class="doc" href="https://drive.google.com/drive/folders/1dfLMLjH02TEv6RGfnhIRi95xKUdKb2f0?usp=sharing" target="_blank" rel="noopener">Documentation →</a>
+      </article>
+
+      <article class="pj-i">
+        <div class="pj-h"><b>Friendly AI Chatbot</b><span>Embedded hardware · AI · PCB design</span><span class="yr">2025</span></div>
+        <p>A standalone embedded AI device built around an ESP32 with real-time voice input, amplified audio output
+          and an OLED display for feedback. Includes a custom-designed PCB and 3D-printed enclosure, with Python
+          driving the conversational logic.</p>
+        <div class="pj-t"><b>Technologies</b> — ESP32, OLED SSD1306, PAM8403, EasyEDA, Python, Arduino IDE, Fusion 360</div>
+        <a class="doc" href="https://drive.google.com/drive/folders/1A3rikUEOEEWcZX6W_JjXLqyuPbLvr2Cd?usp=sharing" target="_blank" rel="noopener">Documentation →</a>
+      </article>
+
+      <article class="pj-i">
+        <div class="pj-h"><b>Dual-Axis CNC Plotter</b><span>Embedded systems · Mechanical design</span><span class="yr">2024</span></div>
+        <p>A 2-axis CNC plotter using Arduino, stepper motors and a custom mechanical frame to translate digital
+          designs into precise physical drawings. Implemented G-code interpretation and motion-control firmware for
+          accurate pen positioning, combining embedded systems with mechanical design.</p>
+        <div class="pj-t"><b>Technologies</b> — Arduino, GRBL firmware, Inkscape, stepper motors, C / C++, Fusion 360</div>
+      </article>
+
+      <article class="pj-i">
+        <div class="pj-h"><b>DoseGuard</b><span>AI systems · Nuclear science · IAEA</span><span class="yr">2026</span></div>
+        <p>A standards-grounded decision engine for gamma irradiation, built on 30+ IAEA research papers and
+          cross-referenced against each destination country's own regulatory limits (e.g. FDA 21 CFR 179.26).
+          Generates a downloadable, accurate prescription report with tailored recommendations for a given product
+          and facility. Built for HackAtom Summer University 2026.</p>
+        <div class="pj-t"><b>Role</b> — team lead</div>
+        <a class="doc" href="https://6a57ef8a93ac1568f52c2965--unique-torte-e3e753.netlify.app/" target="_blank" rel="noopener">Open the engine →</a>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><h2>Experience, education &amp; recognition</h2><i></i><span>2023 — 2026</span></div>
+    <div class="rc" id="r-record">
+
+      <div class="rc-g">
+        <h3>Experience</h3>
+        <div class="rc-i">
+          <b>Embedded Systems Intern</b>
+          <em>Modsonic Instruments Mfg. Co. (P) Ltd · Vallabh Vidyanagar · 2026</em>
+          <p>Built embedded firmware in C on AVR128DA48 for Modsonic's ultrasonic thickness gauges — upgraded the
+            display and keypad interface to SPI TFT with capacitive touch, and developed an IC LCD driver for the
+            next-generation hardware.</p>
+        </div>
+        <div class="rc-i">
+          <b>Summer University Participant</b>
+          <em>Ural Federal University (URFU) · Yekaterinburg, Russia · 2026</em>
+          <p>Gained international-level exposure through URFU's Summer University programme and led the HackAtom
+            team in developing DoseGuard. Strengthened leadership, teamwork, problem-solving, prototyping and
+            technical presentation in an international academic environment.</p>
+        </div>
+      </div>
+
+      <div class="rc-g">
+        <h3>Education</h3>
+        <div class="rc-i">
+          <span class="fig">9.05</span>
+          <b>Birla Vishvakarma Mahavidyalaya</b>
+          <em>B.Tech, Electronics &amp; Communication · Vallabh Vidyanagar · '24 — now · CPI 9.05 / 10</em>
+        </div>
+        <div class="rc-i">
+          <span class="fig">87.8%</span>
+          <b>Bright Day School</b>
+          <em>Higher Secondary, Science · Vadodara · '23 — '24</em>
+        </div>
+      </div>
+
+      <div class="rc-g">
+        <h3>Recognition</h3>
+        <div class="rc-i">
+          <b>Robofest 5.0 Gujarat — Finalist</b>
+          <em>State finals · 2025</em>
+          <p>TerraAvis, the hybrid drone-tank rescue robot, reached the Gujarat state finals.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="border-bottom:0">
+    <div class="sh"><h2>Contact</h2><i></i><span>Fastest route is email</span></div>
+    <div class="ct" id="r-contact">
+      <a class="key" href="mailto:dwijgvyas@gmail.com"><span>Email</span><b>dwijgvyas@gmail.com</b></a>
+      <a href="tel:+919408388690"><span>Phone</span><b>+91 94083 88690</b></a>
+      <a href="https://www.linkedin.com/in/dwij-vyas" target="_blank" rel="noopener"><span>LinkedIn</span><b>in/dwij-vyas</b></a>
+      <a href="dwij-vyas-resume.pdf" download><span>Résumé</span><b>Download PDF</b></a>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span>© 2026 Dwij Vyas — Vadodara, Gujarat</span>
+    <a href="index.html">Full interactive experience →</a>
+  </div>
+
+</div>
+
+
+<script>
+/* ============================================================ content
+   The brief renders from the same content.json the immersive portfolio uses,
+   so one edit in the admin updates both. The markup already in the document
+   is the fallback: if the fetch fails, the page still reads correctly. */
+(async function () {
+  var C = null;
+  var preview = new URLSearchParams(location.search).get('preview') === '1';
+  if (preview) { try { var d = localStorage.getItem('dwij-preview'); if (d) C = JSON.parse(d); } catch (e) {} }
+  if (!C) {
+    try {
+      var r = await fetch('content.json', { cache: 'no-cache' });
+      if (!r.ok) r = await fetch('content.json');
+      if (r.ok) C = await r.json();
+    } catch (e) { return; }
+  }
+  if (!C) return;
+
+  var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); };
+  var P = C.personal || {}, A = P.availability || {};
+  var $ = function (s) { return document.querySelector(s); };
+  var put = function (sel, v) { var e = $(sel); if (e && v) e.textContent = v; };
+
+  put('#r-name', P.name);
+  put('#r-role', P.role);
+  put('#r-sum', P.summary);
+  if (P.name) document.title = P.name + ' — Engineering brief';
+
+  var edu0 = (C.education || [])[0];
+  var facts = [
+    ['Status', '<span class="live">' + esc(A.status || '') + '</span>'],
+    ['Based', esc(P.location || '')],
+    ['Degree', edu0 ? esc((edu0.detail || '').split('·')[0].trim() + (edu0.figure ? ' · ' + edu0.figure + ' ' + (edu0.figureLabel || '') : '')) : ''],
+    ['Email', P.email ? '<a href="mailto:' + esc(P.email) + '">' + esc(P.email) + '</a>' : ''],
+    ['Phone', P.phone ? '<a href="tel:' + esc(P.phone.replace(/[^+\d]/g, '')) + '">' + esc(P.phone) + '</a>' : ''],
+    ['LinkedIn', P.linkedin ? '<a href="' + esc(P.linkedin) + '" target="_blank" rel="noopener">' + esc(P.linkedinLabel || P.linkedin) + '</a>' : '']
+  ].filter(function (r) { return r[1]; });
+  if ($('#r-facts')) $('#r-facts').innerHTML = facts.map(function (r) {
+    return '<div><dt>' + esc(r[0]) + '</dt><dd>' + r[1] + '</dd></div>';
+  }).join('');
+
+  /* skills */
+  var total = (C.skills || []).reduce(function (n, s) { return n + (s.pins || []).length; }, 0);
+  var skHead = document.querySelector('#r-skills');
+  if (skHead) {
+    skHead.innerHTML = (C.skills || []).map(function (s) {
+      return '<div class="sk-g"><h3>' + esc(s.name) + '<em>' + (s.pins || []).length + '</em></h3>' +
+        '<ul>' + (s.pins || []).map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul></div>';
+    }).join('');
+    var cnt = skHead.parentElement.querySelector('.sh span');
+    if (cnt) cnt.textContent = total + ' across ' + (C.skills || []).length + ' disciplines';
+  }
+
+  /* projects */
+  var pj = $('#r-projects');
+  if (pj) {
+    pj.innerHTML = (C.projects || []).map(function (p) {
+      return '<article class="pj-i">' +
+        '<div class="pj-h"><b>' + esc(p.title) + '</b>' +
+          (p.kind ? '<span>' + esc(p.kind) + '</span>' : '') +
+          '<span class="yr">' + esc(p.year) + '</span></div>' +
+        '<p>' + esc(p.lead || p.summary) + (p.body ? ' ' + esc(p.body) : '') + '</p>' +
+        ((p.images || []).length ? '<div class="pj-imgs">' + p.images.slice(0, 3).map(function (im) {
+          return '<img src="' + im.src + '" alt="" loading="lazy">'; }).join('') + '</div>' : '') +
+        ((p.stack || []).length ? '<div class="pj-t"><b>Technologies</b> — ' + esc(p.stack.join(', ')) + '</div>' : '') +
+        (p.links || []).map(function (l) {
+          return '<a class="doc" href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + ' →</a>';
+        }).join('') +
+      '</article>';
+    }).join('');
+    var pc = pj.parentElement.querySelector('.sh span');
+    if (pc) pc.textContent = (C.projects || []).length + ' systems, built end to end';
+  }
+
+  /* experience · education · recognition */
+  var rc = $('#r-record');
+  if (rc) {
+    var col = function (title, items) {
+      return '<div class="rc-g"><h3>' + title + '</h3>' + items.join('') + '</div>';
+    };
+    var html = '';
+    if ((C.experience || []).length) html += col('Experience', C.experience.map(function (x) {
+      return '<div class="rc-i"><b>' + esc(x.role) + '</b><em>' +
+        esc([x.org, x.place, x.year].filter(Boolean).join(' · ')) + '</em>' +
+        (x.body ? '<p>' + esc(x.body) + '</p>' : '') + '</div>';
+    }));
+    if ((C.education || []).length) html += col('Education', C.education.map(function (e) {
+      return '<div class="rc-i">' + (e.figure ? '<span class="fig">' + esc(e.figure) + '</span>' : '') +
+        '<b>' + esc(e.school) + '</b><em>' +
+        esc([e.detail, e.period, e.figure ? e.figure + ' ' + (e.figureLabel || '') : ''].filter(Boolean).join(' · ')) +
+        '</em></div>';
+    }));
+    if ((C.recognition || []).length) html += col('Recognition', C.recognition.map(function (r) {
+      return '<div class="rc-i"><b>' + esc(r.org ? r.org + ' — ' + r.award : r.award) + '</b><em>' +
+        esc(r.year || '') + '</em>' + (r.body ? '<p>' + esc(r.body) + '</p>' : '') + '</div>';
+    }));
+    rc.innerHTML = html;
+  }
+
+  /* contact */
+  var ct = $('#r-contact');
+  if (ct) {
+    var rows = [
+      ['key', 'Email', P.email, 'mailto:' + (P.email || ''), null],
+      ['', 'Phone', P.phone, 'tel:' + (P.phone || '').replace(/[^+\d]/g, ''), null],
+      ['', 'LinkedIn', P.linkedinLabel || P.linkedin, P.linkedin, '_blank'],
+      ['', 'Résumé', 'Download PDF', P.resumeFile, null]
+    ].filter(function (r) { return r[2] && r[3]; });
+    ct.innerHTML = rows.map(function (r) {
+      return '<a class="' + r[0] + '" href="' + esc(r[3]) + '"' +
+        (r[4] ? ' target="_blank" rel="noopener"' : '') +
+        (r[1] === 'Résumé' ? ' download' : '') +
+        '><span>' + esc(r[1]) + '</span><b>' + esc(r[2]) + '</b></a>';
+    }).join('');
+  }
+
+  if (preview) {
+    var flag = document.createElement('div');
+    flag.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:50;padding:8px 13px;font-size:10px;' +
+      'letter-spacing:.2em;text-transform:uppercase;color:#6b4a12;background:#f0e2c2;border:1px solid #c9a24a;';
+    flag.textContent = 'Preview — unpublished draft';
+    document.body.appendChild(flag);
+  }
+})();
+</script>
+</body></html>

@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Portfolio Admin — Dwij Vyas</title>
+<link rel="stylesheet" href="secret-pathways-assets/fonts.css">
+<style>
+:root{
+  --ink:#05070a; --ink-2:#0a0e12; --ink-3:#10151a;
+  --bone:#dfe7e0; --bone-dim:#aab4ad; --muted:#78837c;
+  --line:rgba(223,231,224,.14); --line-soft:rgba(223,231,224,.08);
+  --vermilion:#e0231c; --sage:#7dd3a0; --amber:#d9a441;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*,*::before,*::after{ box-sizing:border-box; }
+body{
+  margin:0; background:var(--ink); color:var(--bone);
+  font-family:'Onest',system-ui,-apple-system,sans-serif; font-weight:400;
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+::selection{ background:var(--vermilion); color:#fff; }
+a{ color:inherit; }
+button,input,textarea,select{ font:inherit; color:inherit; }
+input,textarea,select{
+  width:100%; background:var(--ink-2); border:1px solid var(--line);
+  color:var(--bone); padding:10px 12px; font-size:14px; border-radius:2px;
+  transition:border-color .3s;
+}
+input:focus,textarea:focus,select:focus{ outline:none; border-color:rgba(223,231,224,.4); }
+textarea{ resize:vertical; min-height:88px; line-height:1.65; }
+label{ display:block; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+
+.btn{
+  display:inline-flex; align-items:center; gap:9px; cursor:pointer;
+  font-size:11px; letter-spacing:.18em; text-transform:uppercase; font-weight:500;
+  background:transparent; border:1px solid var(--line); color:var(--bone-dim);
+  padding:11px 16px; border-radius:2px; transition:.3s; white-space:nowrap;
+}
+.btn:hover{ border-color:rgba(223,231,224,.4); color:var(--bone); background:rgba(223,231,224,.04); }
+.btn--key{ border-color:var(--vermilion); background:rgba(224,35,28,.16); color:var(--bone); }
+.btn--key:hover{ background:rgba(224,35,28,.28); }
+.btn--go{ border-color:rgba(125,211,160,.4); background:rgba(125,211,160,.12); color:#cfe9da; }
+.btn--go:hover{ border-color:var(--sage); background:rgba(125,211,160,.2); }
+.btn--sm{ padding:7px 11px; font-size:10px; letter-spacing:.14em; }
+.btn--danger:hover{ border-color:var(--vermilion); color:#ffb3ae; background:rgba(224,35,28,.1); }
+
+/* ---------------------------------------------------------------- gate */
+.gate{ min-height:100dvh; display:grid; place-items:center; padding:24px; }
+.gate-box{ width:min(400px,100%); border:1px solid var(--line); background:var(--ink-2); padding:34px 30px; }
+.gate-box h1{ margin:0 0 6px; font-size:22px; font-weight:400; letter-spacing:-.02em; }
+.gate-box .sub{ margin:0 0 26px; font-size:13px; color:var(--muted); line-height:1.6; }
+.gate-box .fld{ margin-bottom:14px; }
+.gate-err{ margin:14px 0 0; font-size:12px; color:#ff8b84; min-height:18px; }
+.gate-note{
+  margin:24px 0 0; padding-top:18px; border-top:1px solid var(--line-soft);
+  font-size:11.5px; line-height:1.6; color:var(--muted);
+}
+
+/* ---------------------------------------------------------------- shell */
+.app{ display:none; min-height:100dvh; grid-template-columns:216px minmax(0,1fr); }
+.app.on{ display:grid; }
+.side{
+  border-right:1px solid var(--line-soft); background:var(--ink-2);
+  padding:22px 0; display:flex; flex-direction:column; position:sticky; top:0; height:100dvh;
+  /* the column is a fixed 100dvh box, so on a short window its own content
+     runs past the bottom and the footer controls become unreachable — the
+     sticky position means scrolling the page cannot bring them back */
+  overflow-y:auto; min-height:0;
+}
+.side-id{ padding:0 20px 20px; border-bottom:1px solid var(--line-soft); margin-bottom:14px; }
+.side-id b{ display:block; font-size:12px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; }
+.side-id span{ font-size:10.5px; letter-spacing:.14em; color:var(--muted); }
+.side nav{ display:flex; flex-direction:column; gap:1px; padding:0 10px; }
+.side nav button{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  text-align:left; background:none; border:0; cursor:pointer; padding:10px 12px;
+  font-size:13px; color:var(--bone-dim); border-radius:2px; transition:.25s;
+}
+.side nav button:hover{ background:rgba(223,231,224,.05); color:var(--bone); }
+.side nav button.on{ background:rgba(224,35,28,.14); color:var(--bone); }
+.side nav button i{ font-style:normal; font-size:10px; color:var(--muted); font-variant-numeric:tabular-nums; }
+.side-foot{ margin-top:auto; padding:16px 16px 0; display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--line-soft); }
+
+.main{ min-width:0; display:flex; flex-direction:column; }
+.bar{
+  position:sticky; top:0; z-index:10; display:flex; align-items:center; gap:12px;
+  padding:14px 24px; background:rgba(5,7,10,.94); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line-soft);
+}
+.bar h2{ margin:0; font-size:15px; font-weight:400; letter-spacing:.01em; flex:1; }
+.dirty{
+  display:none; align-items:center; gap:7px; font-size:10.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--amber);
+}
+.dirty.on{ display:inline-flex; }
+.dirty::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--amber); }
+.body{ padding:24px; max-width:940px; }
+
+.card{ border:1px solid var(--line); background:var(--ink-2); padding:20px; margin-bottom:12px; }
+.card-hd{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.card-hd h3{ margin:0; font-size:15px; font-weight:500; flex:1; letter-spacing:-.005em; }
+.card-hd .idx{ font-size:10px; letter-spacing:.2em; color:var(--muted); }
+.grid2{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+.fld{ margin-bottom:14px; }
+.fld:last-child{ margin-bottom:0; }
+.hint{ margin:6px 0 0; font-size:11px; color:var(--muted); line-height:1.5; }
+
+.rowlist{ display:flex; flex-direction:column; gap:8px; }
+.rowitem{
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  border:1px solid var(--line-soft); background:var(--ink-3);
+}
+.rowitem input{ background:transparent; border:0; padding:0; font-size:13.5px; }
+.rowitem .drag{ cursor:grab; color:var(--muted); font-size:13px; user-select:none; }
+.addrow{ margin-top:10px; }
+
+.chiplist{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+.chipx{
+  display:inline-flex; align-items:center; gap:8px; padding:6px 8px 6px 10px;
+  border:1px solid var(--line-soft); font-size:12px; color:var(--bone-dim); background:var(--ink-3);
+}
+.chipx button{ background:none; border:0; cursor:pointer; color:var(--muted); font-size:13px; line-height:1; padding:0; }
+.chipx button:hover{ color:var(--vermilion); }
+
+.imgs{ display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; margin-top:10px; }
+.imgs figure{ margin:0; position:relative; border:1px solid var(--line-soft); background:var(--ink-3); }
+.imgs img{ display:block; width:100%; aspect-ratio:16/10; object-fit:cover; }
+.imgs figcaption{ padding:7px 8px; font-size:10.5px; color:var(--muted); }
+.imgs .x{
+  position:absolute; top:5px; right:5px; width:24px; height:24px; border-radius:50%;
+  background:rgba(5,7,10,.86); border:1px solid var(--line); color:var(--bone-dim);
+  cursor:pointer; font-size:12px; line-height:1;
+}
+.imgs .x:hover{ border-color:var(--vermilion); color:#ffb3ae; }
+.imgs .badge{
+  position:absolute; top:6px; left:6px; padding:4px 7px; font-size:9px;
+  letter-spacing:.16em; text-transform:uppercase; color:#cfe9da;
+  background:rgba(6,20,13,.86); border:1px solid rgba(125,211,160,.45);
+}
+.imgs .mk{
+  position:absolute; left:6px; bottom:34px; padding:5px 8px; cursor:pointer;
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--bone-dim); background:rgba(5,7,10,.88); border:1px solid var(--line);
+  opacity:0; transition:opacity .25s;
+}
+.imgs figure:hover .mk{ opacity:1; }
+.imgs .mk:hover{ border-color:rgba(223,231,224,.45); color:var(--bone); }
+.drop{
+  border:1px dashed var(--line); padding:18px; text-align:center; cursor:pointer;
+  font-size:12px; color:var(--muted); transition:.3s; background:var(--ink-3);
+}
+.drop:hover,.drop.over{ border-color:rgba(223,231,224,.4); color:var(--bone-dim); }
+
+.toast{
+  position:fixed; left:50%; bottom:26px; transform:translate(-50%,14px); z-index:50;
+  padding:13px 20px; background:var(--ink-3); border:1px solid var(--line);
+  font-size:13px; opacity:0; pointer-events:none; transition:.4s var(--ease); max-width:min(520px,92vw);
+}
+.toast.on{ opacity:1; transform:translate(-50%,0); }
+.toast.err{ border-color:rgba(224,35,28,.6); }
+.toast.ok{ border-color:rgba(125,211,160,.5); }
+
+.modal{ position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:24px;
+  background:rgba(3,5,8,.8); opacity:0; pointer-events:none; transition:.3s; }
+.modal.on{ opacity:1; pointer-events:auto; }
+.modal-in{ width:min(520px,100%); background:var(--ink-2); border:1px solid var(--line); padding:26px; }
+.modal-in h3{ margin:0 0 10px; font-size:17px; font-weight:400; }
+.modal-in p{ margin:0 0 20px; font-size:13.5px; color:var(--bone-dim); line-height:1.65; }
+.modal-act{ display:flex; gap:10px; justify-content:flex-end; }
+
+@media (max-width:820px){
+  .app.on{ grid-template-columns:1fr; }
+  .side{ position:static; height:auto; }
+  .side nav{ flex-direction:row; flex-wrap:wrap; }
+  .body{ padding:16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ the gate -->
+<section class="gate" id="gate">
+  <div class="gate-box">
+    <h1>Portfolio Admin</h1>
+    <p class="sub">Sign in to edit the live portfolio.</p>
+    <div class="fld">
+      <label for="g-email">Email</label>
+      <input id="g-email" type="email" autocomplete="username" placeholder="you@example.com">
+    </div>
+    <div class="fld">
+      <label for="g-pass">Passphrase</label>
+      <input id="g-pass" type="password" autocomplete="current-password" placeholder="••••••••">
+    </div>
+    <button class="btn btn--key" id="g-go" style="width:100%;justify-content:center">Sign in</button>
+    <p class="gate-err" id="g-err"></p>
+    <p class="gate-note"><b style="color:var(--bone-dim);font-weight:500">On security, honestly:</b>
+      this gate hides the editor, it does not protect it — these are static files, so anyone
+      determined can read past it. What actually protects your site is the GitHub token, which
+      GitHub verifies on its own servers. Never commit that token to the repo.</p>
+  </div>
+</section>
+
+<!-- ============================================================ the app -->
+<div class="app" id="app">
+  <aside class="side">
+    <div class="side-id"><b>Dwij Vyas</b><span>Portfolio admin</span></div>
+    <nav id="nav"></nav>
+    <div class="side-foot">
+      <button class="btn btn--sm" id="btn-preview">Preview site</button>
+      <button class="btn btn--sm" id="btn-export">Download JSON</button>
+      <button class="btn btn--sm" id="btn-import">Import JSON</button>
+      <button class="btn btn--sm btn--danger" id="btn-out">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="bar">
+      <h2 id="pane-title">Personal</h2>
+      <span class="dirty" id="dirty">Unsaved</span>
+      <button class="btn btn--sm" id="btn-save">Save draft</button>
+      <button class="btn btn--go btn--sm" id="btn-publish">Publish to live site</button>
+    </header>
+    <div class="body" id="pane"></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-in">
+    <h3 id="m-title">Confirm</h3>
+    <p id="m-body"></p>
+    <div class="modal-act">
+      <button class="btn btn--sm" id="m-no">Cancel</button>
+      <button class="btn btn--key btn--sm" id="m-yes">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="file-json" accept="application/json" hidden>
+<input type="file" id="file-img" accept="image/*" multiple hidden>
+
+<script>
+'use strict';
+
+/* ============================================================ configuration
+   The passphrase hash and the repo coordinates live here. The GitHub token
+   never does — it is entered once and kept in this browser only. */
+const CFG = {
+  email: 'dwijgvyas@gmail.com',
+  /* SHA-256 of the passphrase. Default is "dwij2026" — change it by running
+     await hash('your new phrase') in the console and pasting the result. */
+  passHash: 'f842d996df7a55825722084cd6cab01eb51a87c75e96f95d642be518ba094594',
+  contentPath: 'public/landing-pages/content.json',
+  siteUrl: 'index.html'
+};
+
+const LS = { session:'dwij-admin-session', draft:'dwij-admin-draft', gh:'dwij-admin-gh' };
+
+
+/* One loader, used by all three pages. A query-string cache-buster is the
+   usual trick, but some hosts reject unknown params — and 'no-cache' is the
+   correct instruction anyway: revalidate with the server, which is exactly
+   what a file that changes on publish needs. The bare retry covers hosts
+   that dislike the header too. */
+async function fetchContent() {
+  try {
+    var r = await fetch('content.json', { cache: 'no-cache' });
+    if (r.ok) return await r.json();
+  } catch (e) {}
+  var r2 = await fetch('content.json');
+  if (!r2.ok) throw new Error('content.json — HTTP ' + r2.status);
+  return await r2.json();
+}
+
+async function hash(s){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+/* ============================================================ state */
+let DATA = null, DIRTY = false, PANE = 'personal';
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const uid = p => p + '-' + Math.random().toString(36).slice(2,8);
+
+function toast(msg, kind){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast on ' + (kind||'');
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>{ t.className = 'toast ' + (kind||''); }, kind==='err'?6000:3200);
+}
+function confirmBox(title, body){
+  return new Promise(res=>{
+    $('#m-title').textContent = title;
+    $('#m-body').textContent = body;
+    $('#modal').classList.add('on');
+    const done = v => { $('#modal').classList.remove('on'); $('#m-yes').onclick=null; $('#m-no').onclick=null; res(v); };
+    $('#m-yes').onclick = ()=>done(true);
+    $('#m-no').onclick = ()=>done(false);
+  });
+}
+function markDirty(){ DIRTY = true; $('#dirty').classList.add('on'); }
+function clearDirty(){ DIRTY = false; $('#dirty').classList.remove('on'); }
+
+/* ============================================================ the gate */
+$('#g-go').addEventListener('click', signIn);
+$('#g-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') signIn(); });
+
+async function signIn(){
+  const email = $('#g-email').value.trim().toLowerCase();
+  const pass  = $('#g-pass').value;
+  if (email !== CFG.email){ $('#g-err').textContent = 'That email cannot edit this portfolio.'; return; }
+  const h = await hash(pass);
+  if (h !== CFG.passHash){ $('#g-err').textContent = 'Wrong passphrase.'; return; }
+  try { sessionStorage.setItem(LS.session, '1'); } catch(e){}
+  open();
+}
+function open(){
+  $('#gate').style.display = 'none';
+  $('#app').classList.add('on');
+  boot();
+}
+try { if (sessionStorage.getItem(LS.session) === '1') open(); } catch(e){}
+
+/* ============================================================ load */
+async function boot(){
+  let draft = null;
+  try { const d = localStorage.getItem(LS.draft); if (d) draft = JSON.parse(d); } catch(e){}
+  if (draft){
+    DATA = draft;
+    markDirty();
+    toast('Restored your unpublished draft.');
+  } else {
+    try {
+      DATA = await fetchContent();
+    } catch(e){
+      toast('Could not load content.json — starting empty. Import a file to recover.', 'err');
+      DATA = { meta:{version:1}, personal:{availability:{},approach:{}}, projects:[], skills:[], experience:[], recognition:[], education:[] };
+    }
+  }
+  normalise();
+  buildNav();
+  render();
+}
+function normalise(){
+  DATA.personal = DATA.personal || {};
+  DATA.personal.availability = DATA.personal.availability || {};
+  DATA.personal.approach = DATA.personal.approach || {};
+  ['projects','skills','experience','recognition','education'].forEach(k=>{ if(!Array.isArray(DATA[k])) DATA[k]=[]; });
+  DATA.projects.forEach(p=>{ p.images = p.images||[]; p.stack=p.stack||[]; p.links=p.links||[]; p.spec=p.spec||[]; });
+  DATA.skills.forEach(s=>{ s.pins = s.pins||[]; });
+}
+
+/* ============================================================ nav */
+const PANES = [
+  ['personal','Personal', ()=>1],
+  ['projects','Projects', ()=>DATA.projects.length],
+  ['skills','Skills', ()=>DATA.skills.reduce((n,s)=>n+s.pins.length,0)],
+  ['experience','Experience', ()=>DATA.experience.length],
+  ['recognition','Recognition', ()=>DATA.recognition.length],
+  ['education','Education', ()=>DATA.education.length],
+  ['publish','Publish', ()=>'']
+];
+function buildNav(){
+  $('#nav').innerHTML = PANES.map(([k,label,count])=>
+    '<button data-p="'+k+'"'+(k===PANE?' class="on"':'')+'><span>'+label+'</span><i>'+count()+'</i></button>').join('');
+  $('#nav').querySelectorAll('button').forEach(b=>{
+    b.onclick = ()=>{ PANE = b.dataset.p; buildNav(); render(); window.scrollTo(0,0); };
+  });
+}
+
+/* ============================================================ field helpers */
+function fld(label, val, oninput, opts){
+  opts = opts||{};
+  const id = uid('f');
+  const el = document.createElement('div');
+  el.className = 'fld';
+  el.innerHTML = '<label for="'+id+'">'+esc(label)+'</label>' +
+    (opts.area ? '<textarea id="'+id+'" rows="'+(opts.rows||4)+'">'+esc(val)+'</textarea>'
+               : '<input id="'+id+'" type="'+(opts.type||'text')+'" value="'+esc(val)+'">') +
+    (opts.hint ? '<p class="hint">'+esc(opts.hint)+'</p>' : '');
+  const input = el.querySelector('input,textarea');
+  input.addEventListener('input', ()=>{ oninput(input.value); markDirty(); });
+  return el;
+}
+function listEditor(items, onChange, placeholder){
+  const wrap = document.createElement('div');
+  function paint(){
+    wrap.innerHTML = '';
+    const list = document.createElement('div');
+    list.className = 'rowlist';
+    items.forEach((v,i)=>{
+      const row = document.createElement('div');
+      row.className = 'rowitem';
+      row.innerHTML = '<span class="drag" title="Drag to reorder">⠿</span>' +
+        '<input value="'+esc(v)+'" placeholder="'+esc(placeholder||'')+'">' +
+        '<button class="btn btn--sm btn--danger" title="Remove">✕</button>';
+      row.draggable = true;
+      row.querySelector('input').addEventListener('input', e=>{ items[i]=e.target.value; onChange(); markDirty(); });
+      row.querySelector('button').onclick = ()=>{ items.splice(i,1); onChange(); markDirty(); paint(); };
+      row.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', i); });
+      row.addEventListener('dragover', e=>e.preventDefault());
+      row.addEventListener('drop', e=>{
+        e.preventDefault();
+        const from = +e.dataTransfer.getData('text/plain');
+        if (from === i) return;
+        const [m] = items.splice(from,1); items.splice(i,0,m);
+        onChange(); markDirty(); paint();
+      });
+      list.appendChild(row);
+    });
+    wrap.appendChild(list);
+    const add = document.createElement('button');
+    add.className = 'btn btn--sm addrow';
+    add.textContent = '+ Add';
+    add.onclick = ()=>{ items.push(''); onChange(); markDirty(); paint(); };
+    wrap.appendChild(add);
+  }
+  paint();
+  return wrap;
+}
+function pairEditor(pairs, onChange, la, lb){
+  const wrap = document.createElement('div');
+  function paint(){
+    wrap.innerHTML = '';
+    const list = document.createElement('div'); list.className='rowlist';
+    pairs.forEach((p,i)=>{
+      const row = document.createElement('div'); row.className='rowitem';
+      row.innerHTML = '<input value="'+esc(p[0])+'" placeholder="'+esc(la)+'" style="flex:0 0 34%">' +
+        '<input value="'+esc(p[1])+'" placeholder="'+esc(lb)+'">' +
+        '<button class="btn btn--sm btn--danger">✕</button>';
+      const ins = row.querySelectorAll('input');
+      ins[0].addEventListener('input', e=>{ p[0]=e.target.value; onChange(); markDirty(); });
+      ins[1].addEventListener('input', e=>{ p[1]=e.target.value; onChange(); markDirty(); });
+      row.querySelector('button').onclick = ()=>{ pairs.splice(i,1); onChange(); markDirty(); paint(); };
+      list.appendChild(row);
+    });
+    wrap.appendChild(list);
+    const add = document.createElement('button');
+    add.className='btn btn--sm addrow'; add.textContent='+ Add';
+    add.onclick = ()=>{ pairs.push(['','']); onChange(); markDirty(); paint(); };
+    wrap.appendChild(add);
+  }
+  paint();
+  return wrap;
+}
+function chipEditor(items, onChange, placeholder){
+  const wrap = document.createElement('div');
+  function paint(){
+    wrap.innerHTML = '';
+    const row = document.createElement('div'); row.className='chiplist';
+    items.forEach((v,i)=>{
+      const c = document.createElement('span'); c.className='chipx';
+      c.innerHTML = esc(v) + ' <button title="Remove">✕</button>';
+      c.querySelector('button').onclick = ()=>{ items.splice(i,1); onChange(); markDirty(); paint(); };
+      row.appendChild(c);
+    });
+    wrap.appendChild(row);
+    const inp = document.createElement('input');
+    inp.placeholder = placeholder || 'Type and press Enter';
+    inp.addEventListener('keydown', e=>{
+      if (e.key === 'Enter' && inp.value.trim()){
+        e.preventDefault();
+        items.push(inp.value.trim()); inp.value=''; onChange(); markDirty(); paint();
+        wrap.querySelector('input').focus();
+      }
+    });
+    wrap.appendChild(inp);
+  }
+  paint();
+  return wrap;
+}
+function cardShell(title, idx, onDel, onUp, onDown){
+  const c = document.createElement('div'); c.className='card';
+  const hd = document.createElement('div'); hd.className='card-hd';
+  hd.innerHTML = '<span class="idx">'+String(idx+1).padStart(2,'0')+'</span><h3>'+esc(title||'Untitled')+'</h3>';
+  const mk=(t,fn,cls)=>{ const b=document.createElement('button'); b.className='btn btn--sm '+(cls||''); b.textContent=t; b.onclick=fn; return b; };
+  if (onUp)   hd.appendChild(mk('↑', onUp));
+  if (onDown) hd.appendChild(mk('↓', onDown));
+  hd.appendChild(mk('Delete', onDel, 'btn--danger'));
+  c.appendChild(hd);
+  return c;
+}
+
+/* ============================================================ images
+   Downscaled and re-encoded in the browser before they are stored, because
+   these travel inside content.json — a 4MB phone photo would make the file
+   unusable. 1280px wide at q0.78 is plenty for a portfolio plate. */
+function shrink(file){
+  return new Promise((res, rej)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const MAX = 1280;
+        const s = Math.min(1, MAX / img.width);
+        const w = Math.round(img.width*s), h = Math.round(img.height*s);
+        const c = document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        res({ src: c.toDataURL('image/jpeg', 0.78), name: file.name, w:w, h:h });
+      };
+      img.onerror = rej;
+      img.src = fr.result;
+    };
+    fr.onerror = rej;
+    fr.readAsDataURL(file);
+  });
+}
+function imageEditor(proj, onChange){
+  const wrap = document.createElement('div');
+  function paint(){
+    wrap.innerHTML = '';
+    if (proj.images.length){
+      const g = document.createElement('div'); g.className='imgs';
+      proj.images.forEach((im,i)=>{
+        const f = document.createElement('figure');
+        const kb = Math.round((im.src.length*0.75)/1024);
+        /* the first image is the one the portfolio shows on the project's
+           card, so it is worth naming rather than leaving to be guessed */
+        f.innerHTML = '<img src="'+im.src+'" alt="">' +
+          (i === 0 ? '<span class="badge">Display image</span>' : '') +
+          '<figcaption>'+esc(im.caption||im.name||'Image '+(i+1))+' · '+kb+'KB</figcaption>' +
+          '<button class="x" title="Remove">✕</button>' +
+          (i > 0 ? '<button class="mk" title="Make this the display image">Make display</button>' : '');
+        f.querySelector('.x').onclick = ()=>{ proj.images.splice(i,1); onChange(); markDirty(); paint(); };
+        var mk = f.querySelector('.mk');
+        if (mk) mk.onclick = ()=>{ var [m]=proj.images.splice(i,1); proj.images.unshift(m); onChange(); markDirty(); paint(); };
+        g.appendChild(f);
+      });
+      wrap.appendChild(g);
+    }
+    const drop = document.createElement('div');
+    drop.className = 'drop';
+    drop.textContent = proj.images.length
+      ? 'Add more images — the first one is the display image on the portfolio'
+      : 'Drop images here, or click to choose — the first becomes the display image';
+    const pick = ()=>{
+      const inp = $('#file-img');
+      inp.value = '';
+      inp.onchange = async ()=>{
+        for (const f of inp.files){
+          try { proj.images.push(await shrink(f)); } catch(e){ toast('Could not read ' + f.name, 'err'); }
+        }
+        onChange(); markDirty(); paint();
+      };
+      inp.click();
+    };
+    drop.onclick = pick;
+    drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.classList.add('over'); });
+    drop.addEventListener('dragleave', ()=>drop.classList.remove('over'));
+    drop.addEventListener('drop', async e=>{
+      e.preventDefault(); drop.classList.remove('over');
+      for (const f of e.dataTransfer.files){
+        if (!f.type.startsWith('image/')) continue;
+        try { proj.images.push(await shrink(f)); } catch(err){}
+      }
+      onChange(); markDirty(); paint();
+    });
+    wrap.appendChild(drop);
+  }
+  paint();
+  return wrap;
+}
+
+/* ============================================================ panes */
+function render(){
+  const p = $('#pane'); p.innerHTML = '';
+  $('#pane-title').textContent = (PANES.find(x=>x[0]===PANE)||[])[1] || '';
+  ({ personal:pPersonal, projects:pProjects, skills:pSkills,
+     experience:pExperience, recognition:pRecognition,
+     education:pEducation, publish:pPublish })[PANE](p);
+  buildNav();
+}
+
+function pPersonal(root){
+  const P = DATA.personal, A = P.availability, AP = P.approach;
+  const c1 = document.createElement('div'); c1.className='card';
+  c1.innerHTML = '<div class="card-hd"><h3>Identity</h3></div>';
+  const g1 = document.createElement('div'); g1.className='grid2';
+  g1.append(
+    fld('Name', P.name, v=>P.name=v),
+    fld('Wordmark (3D letters)', P.wordmark, v=>P.wordmark=v, {hint:'4 letters reads best in the hero.'}),
+    fld('Role', P.role, v=>P.role=v),
+    fld('Location', P.location, v=>P.location=v),
+    fld('Email', P.email, v=>P.email=v, {type:'email'}),
+    fld('Phone', P.phone, v=>P.phone=v),
+    fld('LinkedIn URL', P.linkedin, v=>P.linkedin=v),
+    fld('LinkedIn label', P.linkedinLabel, v=>P.linkedinLabel=v),
+    fld('Résumé filename', P.resumeFile, v=>P.resumeFile=v, {hint:'Upload the PDF to the repo under the same name.'})
+  );
+  c1.appendChild(g1);
+  c1.appendChild(fld('Hero sub-line', P.heroSub, v=>P.heroSub=v, {area:true, rows:2}));
+  c1.appendChild(fld('Summary (recruiter page)', P.summary, v=>P.summary=v, {area:true, rows:4}));
+  root.appendChild(c1);
+
+  const c2 = document.createElement('div'); c2.className='card';
+  c2.innerHTML = '<div class="card-hd"><h3>The approach — chapter 01</h3></div>';
+  c2.append(
+    fld('Heading', AP.heading, v=>AP.heading=v),
+    fld('Lead paragraph', AP.lead, v=>AP.lead=v, {area:true, rows:4}),
+    fld('Body paragraph', AP.body, v=>AP.body=v, {area:true, rows:4})
+  );
+  root.appendChild(c2);
+
+  const c3 = document.createElement('div'); c3.className='card';
+  c3.innerHTML = '<div class="card-hd"><h3>Availability &amp; closing</h3></div>';
+  const g3 = document.createElement('div'); g3.className='grid2';
+  g3.append(
+    fld('Status', A.status, v=>A.status=v),
+    fld('When', A.when, v=>A.when=v),
+    fld('Discipline', A.discipline, v=>A.discipline=v),
+    fld('Open to', A.openTo, v=>A.openTo=v),
+    fld('Response time', A.response, v=>A.response=v)
+  );
+  c3.appendChild(g3);
+  c3.appendChild(fld('Closing paragraph', P.closing, v=>P.closing=v, {area:true, rows:4}));
+  root.appendChild(c3);
+}
+
+function pProjects(root){
+  DATA.projects.forEach((pr,i)=>{
+    const c = cardShell(pr.title, i,
+      async ()=>{ if(await confirmBox('Delete project','Remove "'+(pr.title||'Untitled')+'"? This cannot be undone until you reload without saving.')){ DATA.projects.splice(i,1); markDirty(); render(); } },
+      i>0 ? ()=>{ const [m]=DATA.projects.splice(i,1); DATA.projects.splice(i-1,0,m); markDirty(); render(); } : null,
+      i<DATA.projects.length-1 ? ()=>{ const [m]=DATA.projects.splice(i,1); DATA.projects.splice(i+1,0,m); markDirty(); render(); } : null);
+
+    const g = document.createElement('div'); g.className='grid2';
+    g.append(
+      fld('Title', pr.title, v=>pr.title=v),
+      fld('Sub-label', pr.jp, v=>pr.jp=v, {hint:'Small word beside the title, e.g. rescue.'}),
+      fld('Year', pr.year, v=>pr.year=v),
+      fld('Discipline line', pr.kind, v=>pr.kind=v),
+      fld('Status chip', pr.status, v=>pr.status=v, {hint:'e.g. State finalist, Working prototype.'}),
+      fld('Stack summary', pr.stackShort, v=>pr.stackShort=v, {hint:'Shown on the index row.'})
+    );
+    c.appendChild(g);
+    c.append(
+      fld('One-line summary', pr.summary, v=>pr.summary=v, {area:true, rows:2}),
+      fld('Lead (opens the file)', pr.lead, v=>pr.lead=v, {area:true, rows:3}),
+      fld('Body', pr.body, v=>pr.body=v, {area:true, rows:4}),
+      fld('The hard part', pr.hard, v=>pr.hard=v, {area:true, rows:2})
+    );
+
+    let lab;
+    lab = document.createElement('label'); lab.textContent='Specification rows'; c.appendChild(lab);
+    c.appendChild(pairEditor(pr.spec, ()=>{}, 'Label', 'Value'));
+    lab = document.createElement('label'); lab.textContent='Technology stack'; lab.style.marginTop='18px'; c.appendChild(lab);
+    c.appendChild(chipEditor(pr.stack, ()=>{}, 'Add a technology and press Enter'));
+    lab = document.createElement('label'); lab.textContent='Links'; lab.style.marginTop='18px'; c.appendChild(lab);
+    c.appendChild(pairEditor(pr.links, ()=>{}, 'Label', 'https://…'));
+    lab = document.createElement('label'); lab.textContent='Images'; lab.style.marginTop='18px'; c.appendChild(lab);
+    c.appendChild(imageEditor(pr, ()=>{}));
+
+    root.appendChild(c);
+  });
+  const add = document.createElement('button');
+  add.className='btn btn--key'; add.textContent='+ Add project';
+  add.onclick = ()=>{
+    DATA.projects.push({ id:uid('proj'), title:'New project', jp:'', year:String(new Date().getFullYear()),
+      kind:'', status:'', summary:'', stackShort:'', lead:'', body:'', hard:'',
+      spec:[['Year',String(new Date().getFullYear())]], stack:[], links:[], images:[] });
+    markDirty(); render();
+  };
+  root.appendChild(add);
+}
+
+function pSkills(root){
+  DATA.skills.forEach((s,i)=>{
+    const c = cardShell(s.name + ' · ' + s.pins.length + ' pins', i,
+      async ()=>{ if(await confirmBox('Delete package','Remove the "'+s.name+'" package and its '+s.pins.length+' skills?')){ DATA.skills.splice(i,1); markDirty(); render(); } },
+      i>0 ? ()=>{ const [m]=DATA.skills.splice(i,1); DATA.skills.splice(i-1,0,m); markDirty(); render(); } : null,
+      i<DATA.skills.length-1 ? ()=>{ const [m]=DATA.skills.splice(i,1); DATA.skills.splice(i+1,0,m); markDirty(); render(); } : null);
+    const g = document.createElement('div'); g.className='grid2';
+    g.append(
+      fld('Package name', s.name, v=>{s.name=v;}),
+      fld('Designator', s.des, v=>s.des=v, {hint:'U1, U2, … printed on the chip.'}),
+      fld('Sub-label', s.sub, v=>s.sub=v, {hint:'e.g. MCU · firmware'})
+    );
+    c.appendChild(g);
+    const lab = document.createElement('label'); lab.textContent='Skills (one pin each)'; lab.style.marginTop='6px';
+    c.appendChild(lab);
+    c.appendChild(chipEditor(s.pins, ()=>{}, 'Add a skill and press Enter'));
+    root.appendChild(c);
+  });
+  const add = document.createElement('button');
+  add.className='btn btn--key'; add.textContent='+ Add package';
+  add.onclick = ()=>{ DATA.skills.push({ des:'U'+(DATA.skills.length+1), name:'New package', sub:'', pins:[] }); markDirty(); render(); };
+  root.appendChild(add);
+}
+
+function pExperience(root){
+  DATA.experience.forEach((x,i)=>{
+    const c = cardShell(x.role + ' — ' + x.org, i,
+      async ()=>{ if(await confirmBox('Delete experience','Remove "'+x.role+'"?')){ DATA.experience.splice(i,1); markDirty(); render(); } },
+      i>0 ? ()=>{ const [m]=DATA.experience.splice(i,1); DATA.experience.splice(i-1,0,m); markDirty(); render(); } : null,
+      i<DATA.experience.length-1 ? ()=>{ const [m]=DATA.experience.splice(i,1); DATA.experience.splice(i+1,0,m); markDirty(); render(); } : null);
+    const g = document.createElement('div'); g.className='grid2';
+    g.append(
+      fld('Role', x.role, v=>x.role=v),
+      fld('Organisation', x.org, v=>x.org=v),
+      fld('Place', x.place, v=>x.place=v),
+      fld('Year', x.year, v=>x.year=v)
+    );
+    c.appendChild(g);
+    c.appendChild(fld('What you did', x.body, v=>x.body=v, {area:true, rows:4}));
+    const lab = document.createElement('label'); lab.textContent='Tags'; c.appendChild(lab);
+    x.tags = x.tags||[];
+    c.appendChild(chipEditor(x.tags, ()=>{}, 'Add a tag and press Enter'));
+    root.appendChild(c);
+  });
+  const add = document.createElement('button');
+  add.className='btn btn--key'; add.textContent='+ Add experience';
+  add.onclick = ()=>{ DATA.experience.push({ id:uid('exp'), role:'New role', org:'', place:'', year:String(new Date().getFullYear()), body:'', tags:[] }); markDirty(); render(); };
+  root.appendChild(add);
+}
+
+function pRecognition(root){
+  DATA.recognition.forEach((x,i)=>{
+    const c = cardShell(x.award + ' — ' + x.org, i,
+      async ()=>{ if(await confirmBox('Delete recognition','Remove "'+x.award+'"?')){ DATA.recognition.splice(i,1); markDirty(); render(); } },
+      i>0 ? ()=>{ const [m]=DATA.recognition.splice(i,1); DATA.recognition.splice(i-1,0,m); markDirty(); render(); } : null,
+      i<DATA.recognition.length-1 ? ()=>{ const [m]=DATA.recognition.splice(i,1); DATA.recognition.splice(i+1,0,m); markDirty(); render(); } : null);
+    const g = document.createElement('div'); g.className='grid2';
+    g.append(
+      fld('Award', x.award, v=>x.award=v, {hint:'The big line, e.g. State Finalist.'}),
+      fld('Awarded by', x.org, v=>x.org=v),
+      fld('Year', x.year, v=>x.year=v)
+    );
+    c.appendChild(g);
+    c.appendChild(fld('Detail', x.body, v=>x.body=v, {area:true, rows:3}));
+    root.appendChild(c);
+  });
+  const add = document.createElement('button');
+  add.className='btn btn--key'; add.textContent='+ Add recognition';
+  add.onclick = ()=>{ DATA.recognition.push({ id:uid('rec'), award:'New award', org:'', year:String(new Date().getFullYear()), body:'' }); markDirty(); render(); };
+  root.appendChild(add);
+}
+
+function pEducation(root){
+  DATA.education.forEach((x,i)=>{
+    const c = cardShell(x.school, i,
+      async ()=>{ if(await confirmBox('Delete education','Remove "'+x.school+'"?')){ DATA.education.splice(i,1); markDirty(); render(); } },
+      i>0 ? ()=>{ const [m]=DATA.education.splice(i,1); DATA.education.splice(i-1,0,m); markDirty(); render(); } : null,
+      i<DATA.education.length-1 ? ()=>{ const [m]=DATA.education.splice(i,1); DATA.education.splice(i+1,0,m); markDirty(); render(); } : null);
+    const g = document.createElement('div'); g.className='grid2';
+    g.append(
+      fld('Institution', x.school, v=>x.school=v),
+      fld('Course & place', x.detail, v=>x.detail=v),
+      fld('Period', x.period, v=>x.period=v),
+      fld('Figure', x.figure, v=>x.figure=v, {hint:'e.g. 9.05'}),
+      fld('Figure label', x.figureLabel, v=>x.figureLabel=v, {hint:'e.g. CPI / 10'})
+    );
+    c.appendChild(g);
+    root.appendChild(c);
+  });
+  const add = document.createElement('button');
+  add.className='btn btn--key'; add.textContent='+ Add education';
+  add.onclick = ()=>{ DATA.education.push({ id:uid('edu'), school:'New institution', detail:'', period:'', figure:'', figureLabel:'' }); markDirty(); render(); };
+  root.appendChild(add);
+}
+
+/* ============================================================ publish */
+function ghCfg(){
+  try { return JSON.parse(localStorage.getItem(LS.gh) || '{}'); } catch(e){ return {}; }
+}
+function pPublish(root){
+  const g = ghCfg();
+  const c = document.createElement('div'); c.className='card';
+  c.innerHTML = '<div class="card-hd"><h3>GitHub → Vercel</h3></div>' +
+    '<p class="hint" style="margin:-6px 0 18px">Publishing commits <b>' + esc(CFG.contentPath) + '</b> to your repository. ' +
+    'Vercel sees the commit and redeploys automatically — your changes are live in about 30 seconds.</p>';
+  const gg = document.createElement('div'); gg.className='grid2';
+  gg.append(
+    fld('Repository', g.repo||'', v=>{ const o=ghCfg(); o.repo=v; localStorage.setItem(LS.gh, JSON.stringify(o)); }, {hint:'owner/name — e.g. dwijvyas/portfolio'}),
+    fld('Branch', g.branch||'main', v=>{ const o=ghCfg(); o.branch=v; localStorage.setItem(LS.gh, JSON.stringify(o)); }),
+    fld('File path in repo', g.path||CFG.contentPath, v=>{ const o=ghCfg(); o.path=v; localStorage.setItem(LS.gh, JSON.stringify(o)); }),
+    fld('Personal access token', g.token||'', v=>{ const o=ghCfg(); o.token=v; localStorage.setItem(LS.gh, JSON.stringify(o)); }, {type:'password', hint:'Fine-grained token with Contents: Read and write on this repo only.'})
+  );
+  c.appendChild(gg);
+  root.appendChild(c);
+
+  const c2 = document.createElement('div'); c2.className='card';
+  c2.innerHTML = '<div class="card-hd"><h3>How to create the token</h3></div>' +
+    '<ol class="hint" style="margin:0;padding-left:18px;line-height:1.9">' +
+    '<li>GitHub → Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b>.</li>' +
+    '<li>Generate new token. Repository access: <b>Only select repositories</b> → your portfolio repo.</li>' +
+    '<li>Permissions → Repository permissions → <b>Contents: Read and write</b>. Nothing else.</li>' +
+    '<li>Generate, copy, and paste it above. It is stored in this browser only — never in the repo.</li>' +
+    '</ol>';
+  root.appendChild(c2);
+
+  const c3 = document.createElement('div'); c3.className='card';
+  c3.innerHTML = '<div class="card-hd"><h3>Content size</h3></div>';
+  const json = JSON.stringify(DATA);
+  const kb = Math.round(json.length/1024);
+  const imgs = DATA.projects.reduce((n,p)=>n+p.images.length,0);
+  c3.innerHTML += '<p class="hint" style="margin:-6px 0 0">' + kb + ' KB · ' +
+    DATA.projects.length + ' projects · ' + DATA.skills.reduce((n,s)=>n+s.pins.length,0) + ' skills · ' +
+    imgs + ' images' + (kb > 900 ? ' — <b style="color:var(--amber)">getting large; consider fewer or smaller images</b>' : '') + '</p>';
+  root.appendChild(c3);
+}
+
+async function publish(){
+  const g = ghCfg();
+  if (!g.repo || !g.token){ PANE='publish'; render(); toast('Add your repository and token first.', 'err'); return; }
+  const path = g.path || CFG.contentPath;
+  const branch = g.branch || 'main';
+  const api = 'https://api.github.com/repos/' + g.repo + '/contents/' + path;
+  const hdr = { 'Authorization':'Bearer ' + g.token, 'Accept':'application/vnd.github+json' };
+
+  toast('Publishing…');
+  try {
+    /* the current file's sha is required to update it */
+    let sha = null;
+    const cur = await fetch(api + '?ref=' + encodeURIComponent(branch), { headers: hdr });
+    if (cur.status === 200){ sha = (await cur.json()).sha; }
+    else if (cur.status !== 404){
+      const e = await cur.json().catch(()=>({}));
+      throw new Error('GitHub said ' + cur.status + (e.message ? ' — ' + e.message : ''));
+    }
+
+    DATA.meta = DATA.meta || {};
+    DATA.meta.updated = new Date().toISOString().slice(0,10);
+    DATA.meta.version = (DATA.meta.version||0) + 1;
+
+    const body = JSON.stringify(DATA, null, 2);
+    /* btoa is byte-based; encode UTF-8 first or any non-ASCII character throws */
+    const b64 = btoa(String.fromCharCode(...new TextEncoder().encode(body)));
+
+    const put = await fetch(api, {
+      method:'PUT', headers:{...hdr, 'Content-Type':'application/json'},
+      body: JSON.stringify({
+        message: 'Update portfolio content (v' + DATA.meta.version + ')',
+        content: b64, branch: branch, ...(sha ? {sha} : {})
+      })
+    });
+    if (!put.ok){
+      const e = await put.json().catch(()=>({}));
+      throw new Error('GitHub said ' + put.status + (e.message ? ' — ' + e.message : ''));
+    }
+    try { localStorage.removeItem(LS.draft); } catch(e){}
+    clearDirty();
+    toast('Published. Vercel is rebuilding — live in about 30 seconds.', 'ok');
+  } catch(err){
+    toast('Publish failed: ' + err.message, 'err');
+  }
+}
+
+/* ============================================================ toolbar */
+$('#btn-save').onclick = ()=>{
+  try { localStorage.setItem(LS.draft, JSON.stringify(DATA)); toast('Draft saved in this browser.', 'ok'); }
+  catch(e){ toast('Could not save — storage may be full (large images).', 'err'); }
+};
+$('#btn-publish').onclick = async ()=>{
+  if (await confirmBox('Publish to the live site',
+      'This commits content.json to GitHub and triggers a Vercel deploy. Your portfolio will show these changes in about 30 seconds.')) publish();
+};
+$('#btn-preview').onclick = ()=>{
+  try { localStorage.setItem('dwij-preview', JSON.stringify(DATA)); } catch(e){}
+  window.open(CFG.siteUrl + '?preview=1', '_blank');
+};
+$('#btn-export').onclick = ()=>{
+  const b = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b); a.download = 'content.json'; a.click();
+  URL.revokeObjectURL(a.href);
+};
+$('#btn-import').onclick = ()=>{
+  const inp = $('#file-json'); inp.value = '';
+  inp.onchange = ()=>{
+    const f = inp.files[0]; if (!f) return;
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      try { DATA = JSON.parse(fr.result); normalise(); markDirty(); render(); toast('Imported.', 'ok'); }
+      catch(e){ toast('That file is not valid JSON.', 'err'); }
+    };
+    fr.readAsText(f);
+  };
+  inp.click();
+};
+$('#btn-out').onclick = async ()=>{
+  if (DIRTY && !await confirmBox('Sign out with unsaved changes?','Your draft stays in this browser unless you clear it.')) return;
+  try { sessionStorage.removeItem(LS.session); } catch(e){}
+  location.reload();
+};
+addEventListener('beforeunload', e=>{ if (DIRTY){ e.preventDefault(); e.returnValue=''; } });
+</script>
+</body></html>
